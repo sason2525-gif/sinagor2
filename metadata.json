@@ -1,0 +1,7 @@
+{
+  "name": "לוח בית כנסת",
+  "description": "מערכת ניהול זמנים והודעות",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
