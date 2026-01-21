@@ -1,10 +1,25 @@
 
-import { Clock, Sun, Moon, BookOpen, Star, Sparkles, Calendar, Maximize, Minimize, Edit3, Plus, Trash2, Settings, PartyPopper, Heart, Eye, X, Check, Baby, Flower2, Volume2, ShieldCheck, User, Users, Image as ImageIcon, Upload, FileText } from 'lucide-react';
+import { Clock, Sun, Moon, BookOpen, Star, Sparkles, Calendar, Maximize, Minimize, Edit3, Plus, Trash2, Settings, PartyPopper, Heart, Eye, X, Check, Baby, Flower2, Volume2, ShieldCheck, User, Users, Image as ImageIcon, Upload, FileText, Phone, MapPin } from 'lucide-react';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ZmanimData, Lesson, SynagogueTimes, CelebrationSettings, CelebrationType, EventConfig, DedicationConfig, CustomContentConfig } from './types';
+import { ZmanimData, Lesson, SynagogueTimes, CelebrationSettings, CelebrationType, EventConfig, DedicationConfig, CustomContentConfig, HallAdConfig } from './types';
 import { fetchDailyHalakha } from './services/geminiService';
 
 // --- איורים משודרגים ---
+
+const GoldBalloon = ({ className = "" }) => (
+  <svg viewBox="0 0 100 120" className={className}>
+    <defs>
+      <radialGradient id="goldBalloonGrad" cx="30%" cy="30%" r="70%">
+        <stop offset="0%" style={{ stopColor: '#fef3c7', stopOpacity: 1 }} />
+        <stop offset="50%" style={{ stopColor: '#fbbf24', stopOpacity: 1 }} />
+        <stop offset="100%" style={{ stopColor: '#b45309', stopOpacity: 1 }} />
+      </radialGradient>
+    </defs>
+    <path d="M50,100 Q10,100 10,50 Q10,0 50,0 Q90,0 90,50 Q90,100 50,100 Z" fill="url(#goldBalloonGrad)" />
+    <path d="M50,100 L45,110 L55,110 Z" fill="#b45309" />
+    <path d="M50,110 Q50,120 40,130" stroke="#fef3c7" fill="none" strokeWidth="1" />
+  </svg>
+);
 
 const TreeIllustration = ({ colorScale = 1 }) => (
   <svg viewBox="0 0 200 240" className="w-full h-full drop-shadow-2xl opacity-80">
@@ -176,14 +191,15 @@ const App: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   
   const [celebrations, setCelebrations] = useState<CelebrationSettings>(() => {
-    const saved = localStorage.getItem('synagogue_celebration_v7');
+    const saved = localStorage.getItem('synagogue_celebration_v8');
     if (saved) return JSON.parse(saved);
     return {
       wedding: { isActive: false, familyName: "כהן", coupleNames: "דוד ורחל", displayDuration: 15 },
       son_birth: { isActive: false, familyName: "לוי", coupleNames: "", displayDuration: 15 },
       daughter_birth: { isActive: false, familyName: "ישראלי", coupleNames: "", displayDuration: 15 },
       dedication: { isActive: false, successName: "פלוני בן פלוני", familySubText: "וכל יוצאי חלציו", displayDuration: 15 },
-      custom: { isActive: false, imageData: "", displayDuration: 15, title: "מודעה מיוחדת" }
+      custom: { isActive: false, imageData: "", displayDuration: 15, title: "מודעה מיוחדת" },
+      hall_ad: { isActive: true, displayDuration: 15, contactPhone: "053-5301057", contactName: "ששון", images: ["", "", ""] }
     };
   });
 
@@ -197,6 +213,7 @@ const App: React.FC = () => {
     if (celebrations.son_birth.isActive) pages.push('son_birth');
     if (celebrations.daughter_birth.isActive) pages.push('daughter_birth');
     if (celebrations.dedication.isActive) pages.push('dedication');
+    if (celebrations.hall_ad.isActive) pages.push('hall_ad');
     if (celebrations.custom.isActive && celebrations.custom.imageData) pages.push('custom');
     return pages;
   }, [celebrations]);
@@ -307,6 +324,75 @@ const App: React.FC = () => {
   }, [fetchZmanim, refreshHalakha]);
 
   const renderCelebrationPage = (type: CelebrationType) => {
+    if (type === 'hall_ad') {
+        const data = celebrations.hall_ad;
+        const defaultPhotos = [
+            "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800"
+        ];
+        
+        return (
+          <div className="h-screen w-screen bg-[#333333] flex flex-col items-center justify-center relative animate-fade-in overflow-hidden font-sans p-12">
+            <div className="absolute top-10 right-10 flex gap-2">
+                <GoldBalloon className="w-16 animate-bounce" />
+                <GoldBalloon className="w-20 -mt-4 animate-pulse" />
+                <GoldBalloon className="w-14 mt-2" />
+            </div>
+            <div className="absolute bottom-10 left-10 flex gap-2 rotate-180">
+                <GoldBalloon className="w-16 animate-bounce" />
+                <GoldBalloon className="w-20 -mt-4" />
+            </div>
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[length:20px_20px]"></div>
+            
+            <div className="z-10 text-center space-y-6 max-w-6xl">
+                <h1 className="text-[9rem] font-black font-serif-hebrew leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-[#fef3c7] via-[#fbbf24] to-[#b45309] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">אולם משכנות נריה</h1>
+                
+                <div className="space-y-3">
+                    <p className="text-6xl font-black text-amber-200 drop-shadow-md italic">יש לכם אירוע קטן ואינטימי?</p>
+                    <p className="text-5xl font-bold text-slate-100 bg-white/10 py-3 px-12 rounded-full inline-block backdrop-blur-md border border-white/20">שבת חתן, בר מצווה, ברית מילה, חלאקה וכו'</p>
+                </div>
+
+                <p className="text-4xl font-black text-amber-100 max-w-4xl mx-auto leading-relaxed border-t border-b border-white/20 py-4">אולם בית כנסת משכנות נריה מתאים בדיוק בשבילכם</p>
+
+                <div className="bg-gradient-to-r from-transparent via-amber-600/40 to-transparent p-4">
+                    <p className="text-5xl font-black text-white">המקום מתאים לאירועים קטנים 60-80 איש</p>
+                </div>
+
+                {/* Polaroid Photos Grid */}
+                <div className="grid grid-cols-3 gap-8 mt-12 px-8">
+                    {[0, 1, 2].map(idx => (
+                      <div key={idx} className={`bg-white p-4 pb-12 shadow-2xl rounded-sm transform hover:scale-105 transition-transform ${idx === 0 ? 'rotate-[-3deg]' : idx === 1 ? 'rotate-[2deg] -mt-6' : 'rotate-[-1deg]'}`}>
+                          <div className="aspect-video bg-slate-200 overflow-hidden rounded-sm border border-slate-300">
+                               <img src={data.images[idx] || defaultPhotos[idx]} className="w-full h-full object-cover" alt={`אולם ${idx + 1}`} />
+                          </div>
+                      </div>
+                    ))}
+                </div>
+
+                <div className="pt-8 space-y-4">
+                    <div className="flex items-center justify-center gap-4 text-slate-300 text-3xl">
+                        <MapPin className="text-amber-500" size={32} />
+                        <p className="font-bold">רחוב פנחס בן יאיר 24 אלעד</p>
+                    </div>
+                    <div className="flex items-center justify-center gap-8 bg-slate-100/10 p-6 rounded-3xl border border-white/10">
+                        <div className="flex items-center gap-3">
+                            <Phone className="text-amber-400" size={40} />
+                            <p className="text-6xl font-black tracking-widest text-white">{data.contactPhone}</p>
+                        </div>
+                        <div className="h-12 w-px bg-white/20"></div>
+                        <p className="text-6xl font-black text-amber-400">{data.contactName}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="absolute bottom-6 left-1/4 right-1/4 h-2 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-amber-500" style={{ animation: `progress ${data.displayDuration}s linear forwards` }} />
+            </div>
+          </div>
+        );
+    }
+
     if (type === 'custom') {
       const data = celebrations.custom;
       return (
@@ -363,7 +449,7 @@ const App: React.FC = () => {
         );
     }
 
-    const data = celebrations[type as keyof Omit<CelebrationSettings, 'dedication' | 'custom'>];
+    const data = celebrations[type as keyof Omit<CelebrationSettings, 'dedication' | 'custom' | 'hall_ad'>];
     const isWedding = type === 'wedding';
     const isSon = type === 'son_birth';
     const isDaughter = type === 'daughter_birth';
@@ -415,7 +501,7 @@ const App: React.FC = () => {
     return (
       <>
         {renderCelebrationPage(currentPage)}
-        {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v7', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
+        {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v8', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
         <style>{`
           @keyframes progress { from { width: 0%; } to { width: 100%; } }
           @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -480,7 +566,7 @@ const App: React.FC = () => {
 
       <footer className="h-18 bg-amber-500 rounded-3xl flex items-center overflow-hidden shadow-2xl shrink-0"><div className="bg-amber-700 h-full px-8 flex items-center font-black text-2xl text-white italic shadow-2xl z-20">הודעות</div><div className="flex-1 overflow-hidden"><div className="animate-marquee text-3xl font-black text-slate-950 py-2">{marqueeText.split('•').map((m, i) => <span key={i} className="mx-12 flex items-center gap-4 inline-flex"><Star size={24} className="fill-slate-950" /> {m.trim()}</span>)}</div></div></footer>
 
-      {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v7', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
+      {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v8', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
       {isEditingMarquee && (<div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"><div className="bg-slate-900 border border-amber-500 rounded-[2.5rem] p-10 w-full max-w-2xl shadow-2xl"><h3 className="text-3xl font-black text-amber-400 mb-6">עריכת הודעות</h3><textarea value={tempMarqueeText} onChange={(e) => setTempMarqueeText(e.target.value)} className="w-full h-48 bg-slate-950 border border-white/10 rounded-2xl p-6 text-2xl text-white outline-none focus:border-amber-500" /><div className="flex justify-end gap-4 mt-8"><button onClick={() => setIsEditingMarquee(false)} className="px-8 py-3 rounded-xl bg-slate-800 font-bold">ביטול</button><button onClick={() => { setMarqueeText(tempMarqueeText); localStorage.setItem('synagogue_marquee', tempMarqueeText); setIsEditingMarquee(false); }} className="px-8 py-3 rounded-xl bg-amber-500 text-slate-950 font-black">שמור</button></div></div></div>)}
       {isEditingLessons && (<div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 overflow-y-auto"><div className="bg-slate-900 border border-emerald-500 rounded-[2.5rem] p-8 w-full max-w-3xl shadow-2xl my-8"><h3 className="text-3xl font-black text-emerald-400 mb-6 border-b border-white/10 pb-4">ניהול שיעורי תורה</h3><div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 mb-6">{tempLessons.map((lesson, idx) => (<div key={idx} className="bg-slate-950 p-4 rounded-2xl border border-white/5 space-y-3 relative group"><button onClick={() => setTempLessons(tempLessons.filter((_, i) => i !== idx))} className="absolute top-2 left-2 p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all opacity-0 group-hover:opacity-100"><Trash2 size={18} /></button><div className="grid grid-cols-2 gap-4"><input type="text" placeholder="שם השיעור" value={lesson.title} onChange={(e) => { const n = [...tempLessons]; n[idx].title = e.target.value; setTempLessons(n); }} className="bg-slate-900 p-3 rounded-xl border border-white/10 text-white outline-none focus:border-emerald-500" /><input type="text" placeholder="שם המרצה" value={lesson.teacher} onChange={(e) => { const n = [...tempLessons]; n[idx].teacher = e.target.value; setTempLessons(n); }} className="bg-slate-900 p-3 rounded-xl border border-white/10 text-white outline-none focus:border-emerald-500" /><input type="text" placeholder="שעה (00:00)" value={lesson.time} onChange={(e) => { const n = [...tempLessons]; n[idx].time = e.target.value; setTempLessons(n); }} className="bg-slate-900 p-3 rounded-xl border border-white/10 text-white outline-none focus:border-emerald-500" /><input type="text" placeholder="ימים" value={lesson.days} onChange={(e) => { const n = [...tempLessons]; n[idx].days = e.target.value; setTempLessons(n); }} className="bg-slate-900 p-3 rounded-xl border border-white/10 text-white outline-none focus:border-emerald-500" /></div></div>))}<button onClick={() => setTempLessons([...tempLessons, { title: "", teacher: "", time: "", days: "" }])} className="w-full p-4 border-2 border-dashed border-white/10 rounded-2xl text-emerald-300 hover:bg-emerald-500/10 flex items-center justify-center gap-2 transition-all font-bold"><Plus size={20} /> הוסף שיעור חדש</button></div><div className="flex justify-end gap-4 pt-6 border-t border-white/10"><button onClick={() => setIsEditingLessons(false)} className="px-8 py-3 rounded-xl bg-slate-800 font-bold">ביטול</button><button onClick={() => { setLessons(tempLessons); localStorage.setItem('synagogue_lessons', JSON.stringify(tempLessons)); setIsEditingLessons(false); }} className="px-8 py-3 rounded-xl bg-emerald-600 text-white font-black shadow-lg">שמור עדכונים</button></div></div></div>)}
       {isEditingSynagogueTimes && (<div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"><div className="bg-slate-900 border border-indigo-500 rounded-[2.5rem] p-10 w-full max-w-xl shadow-2xl"><h3 className="text-3xl font-black text-indigo-400 mb-8 border-b border-white/10 pb-4">זמני תפילה (שבת)</h3><div className="space-y-6"><div className="space-y-2"><label className="text-slate-400 font-bold block">מנחה גדולה:</label><input type="text" value={tempSynagogueTimes.minchaGedolaShabbat} onChange={(e) => setTempSynagogueTimes({...tempSynagogueTimes, minchaGedolaShabbat: e.target.value})} className="w-full bg-slate-950 p-4 rounded-xl border border-white/10 text-2xl text-white outline-none focus:border-indigo-500" placeholder="13:00" /></div><div className="space-y-2"><label className="text-slate-400 font-bold block">מנחה קטנה:</label><input type="text" value={tempSynagogueTimes.minchaKetanaShabbat} onChange={(e) => setTempSynagogueTimes({...tempSynagogueTimes, minchaKetanaShabbat: e.target.value})} className="w-full bg-slate-950 p-4 rounded-xl border border-white/10 text-2xl text-white outline-none focus:border-indigo-500" placeholder="16:30" /></div></div><div className="flex justify-end gap-4 mt-10"><button onClick={() => setIsEditingSynagogueTimes(false)} className="px-8 py-3 rounded-xl bg-slate-800 font-bold">ביטול</button><button onClick={() => { setSynagogueTimes(tempSynagogueTimes); localStorage.setItem('synagogue_times', JSON.stringify(tempSynagogueTimes)); setIsEditingSynagogueTimes(false); }} className="px-10 py-3 rounded-xl bg-indigo-600 text-white font-black shadow-lg">שמור</button></div></div></div>)}
@@ -500,6 +586,8 @@ const ZmanimItem = ({ icon, label, value, sub, primary, isManual }: any) => (
 const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
   const [activeTab, setActiveTab] = useState<CelebrationType>('wedding');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hallFileInputRef = useRef<HTMLInputElement>(null);
+  const [currentHallImgIdx, setCurrentHallImgIdx] = useState<number>(0);
   const currentConfig = temp[activeTab];
 
   const updateConfig = (key: string, value: any) => {
@@ -511,7 +599,13 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        updateConfig('imageData', reader.result as string);
+        if (activeTab === 'custom') {
+          updateConfig('imageData', reader.result as string);
+        } else if (activeTab === 'hall_ad') {
+          const newImages = [...temp.hall_ad.images];
+          newImages[currentHallImgIdx] = reader.result as string;
+          setTemp({ ...temp, hall_ad: { ...temp.hall_ad, images: newImages } });
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -522,7 +616,8 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
     son_birth: 'border-blue-600',
     daughter_birth: 'border-pink-600',
     dedication: 'border-[#457fb1]',
-    custom: 'border-emerald-600'
+    custom: 'border-emerald-600',
+    hall_ad: 'border-amber-600'
   }[activeTab];
 
   const textClass = {
@@ -530,7 +625,8 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
     son_birth: 'text-blue-900',
     daughter_birth: 'text-pink-900',
     dedication: 'text-[#2d4d29]',
-    custom: 'text-emerald-900'
+    custom: 'text-emerald-900',
+    hall_ad: 'text-amber-900'
   }[activeTab];
 
   return (
@@ -538,12 +634,13 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
       <div className={`bg-[#fffbf2] border-8 ${themeClass} rounded-[3rem] p-8 md:p-12 w-full max-w-4xl text-[#422006] shadow-2xl my-8 transition-colors duration-500`}>
         <h3 className={`text-4xl md:text-5xl font-black mb-8 font-serif-hebrew border-b-4 pb-4 text-center ${textClass}`}>ניהול הודעות ותוכן ללופ</h3>
         
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-10">
-          <TabButton active={activeTab === 'wedding'} onClick={() => setActiveTab('wedding')} icon={<Heart size={24} />} label="חתונה" activeClass="bg-red-50 border-red-600 text-red-600" activeBadge={temp.wedding.isActive} />
-          <TabButton active={activeTab === 'son_birth'} onClick={() => setActiveTab('son_birth')} icon={<Baby size={24} />} label="בן" activeClass="bg-blue-50 border-blue-600 text-blue-600" activeBadge={temp.son_birth.isActive} />
-          <TabButton active={activeTab === 'daughter_birth'} onClick={() => setActiveTab('daughter_birth')} icon={<Flower2 size={24} />} label="בת" activeClass="bg-pink-50 border-pink-600 text-pink-600" activeBadge={temp.daughter_birth.isActive} />
-          <TabButton active={activeTab === 'dedication'} onClick={() => setActiveTab('dedication')} icon={<Users size={24} />} label="הקדשה" activeClass="bg-blue-50 border-[#457fb1] text-[#457fb1]" activeBadge={temp.dedication.isActive} />
-          <TabButton active={activeTab === 'custom'} onClick={() => setActiveTab('custom')} icon={<ImageIcon size={24} />} label="תמונה" activeClass="bg-emerald-50 border-emerald-600 text-emerald-600" activeBadge={temp.custom.isActive} />
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-2 mb-10">
+          <TabButton active={activeTab === 'wedding'} onClick={() => setActiveTab('wedding')} icon={<Heart size={20} />} label="חתונה" activeClass="bg-red-50 border-red-600 text-red-600" activeBadge={temp.wedding.isActive} />
+          <TabButton active={activeTab === 'son_birth'} onClick={() => setActiveTab('son_birth')} icon={<Baby size={20} />} label="בן" activeClass="bg-blue-50 border-blue-600 text-blue-600" activeBadge={temp.son_birth.isActive} />
+          <TabButton active={activeTab === 'daughter_birth'} onClick={() => setActiveTab('daughter_birth')} icon={<Flower2 size={20} />} label="בת" activeClass="bg-pink-50 border-pink-600 text-pink-600" activeBadge={temp.daughter_birth.isActive} />
+          <TabButton active={activeTab === 'dedication'} onClick={() => setActiveTab('dedication')} icon={<Users size={20} />} label="הקדשה" activeClass="bg-blue-50 border-[#457fb1] text-[#457fb1]" activeBadge={temp.dedication.isActive} />
+          <TabButton active={activeTab === 'hall_ad'} onClick={() => setActiveTab('hall_ad')} icon={<ImageIcon size={20} />} label="אולם" activeClass="bg-amber-50 border-amber-600 text-amber-600" activeBadge={temp.hall_ad.isActive} />
+          <TabButton active={activeTab === 'custom'} onClick={() => setActiveTab('custom')} icon={<ImageIcon size={20} />} label="תמונה" activeClass="bg-emerald-50 border-emerald-600 text-emerald-600" activeBadge={temp.custom.isActive} />
         </div>
 
         <div className="space-y-8 animate-fade-in" key={activeTab}>
@@ -553,6 +650,34 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
               <div className="w-8 h-8 bg-white rounded-full shadow-md"></div>
             </button>
           </div>
+
+          {activeTab === 'hall_ad' && (
+            <>
+              <div className="grid grid-cols-3 gap-4">
+                  {[0, 1, 2].map(idx => (
+                    <div key={idx} className="flex flex-col items-center gap-2">
+                        <span className="font-bold text-sm">תמונה {idx + 1}</span>
+                        <div 
+                          onClick={() => { setCurrentHallImgIdx(idx); hallFileInputRef.current?.click(); }}
+                          className="w-full aspect-video bg-amber-50 border-2 border-dashed border-amber-300 rounded-xl cursor-pointer hover:bg-amber-100 transition-all flex items-center justify-center overflow-hidden relative group"
+                        >
+                            {temp.hall_ad.images[idx] ? (
+                                <>
+                                  <img src={temp.hall_ad.images[idx]} className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"><Upload className="text-white" /></div>
+                                </>
+                            ) : (
+                                <Plus className="text-amber-400" />
+                            )}
+                        </div>
+                    </div>
+                  ))}
+                  <input type="file" ref={hallFileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
+              </div>
+              <div className="space-y-2"><label className="text-xl font-bold">טלפון ליצירת קשר:</label><input type="text" value={temp.hall_ad.contactPhone} onChange={(e) => updateConfig('contactPhone', e.target.value)} className="w-full bg-white border-4 border-slate-100 rounded-2xl p-4 text-2xl font-black outline-none focus:border-amber-500" /></div>
+              <div className="space-y-2"><label className="text-xl font-bold">שם איש קשר:</label><input type="text" value={temp.hall_ad.contactName} onChange={(e) => updateConfig('contactName', e.target.value)} className="w-full bg-white border-4 border-slate-100 rounded-2xl p-4 text-2xl font-black outline-none focus:border-amber-500" /></div>
+            </>
+          )}
 
           {activeTab === 'custom' && (
             <div className="space-y-6">
@@ -610,10 +735,10 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
 };
 
 const TabButton = ({ active, onClick, icon, label, activeClass, activeBadge }: any) => (
-  <button onClick={onClick} className={`p-3 md:p-4 rounded-3xl border-4 flex flex-col items-center gap-2 transition-all relative ${active ? activeClass + ' shadow-lg scale-105' : 'bg-white border-slate-200 opacity-60 hover:opacity-100'}`}>
+  <button onClick={onClick} className={`p-3 rounded-3xl border-4 flex flex-col items-center gap-1 transition-all relative ${active ? activeClass + ' shadow-lg scale-105' : 'bg-white border-slate-200 opacity-60 hover:opacity-100'}`}>
     {icon}
-    <span className="text-sm md:text-lg font-black">{label}</span>
-    {activeBadge && <div className="absolute -top-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white animate-pulse"></div>}
+    <span className="text-[10px] md:text-sm font-black whitespace-nowrap">{label}</span>
+    {activeBadge && <div className="absolute -top-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white animate-pulse"></div>}
   </button>
 );
 
