@@ -48,6 +48,35 @@ const CornerDecoration = () => (
   </svg>
 );
 
+const PacifierIllustration = ({ color = "#38bdf8" }) => (
+  <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-lg opacity-40">
+    <circle cx="50" cy="40" r="15" fill={color} opacity="0.3" />
+    <path d="M30,60 Q50,90 70,60" fill="none" stroke={color} strokeWidth="6" strokeLinecap="round" />
+    <rect x="35" y="45" width="30" height="15" rx="5" fill={color} />
+    <circle cx="50" cy="30" r="10" fill={color} />
+  </svg>
+);
+
+const BottleIllustration = ({ color = "#38bdf8" }) => (
+  <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-lg opacity-40">
+    <rect x="35" y="40" width="30" height="45" rx="5" fill="white" stroke={color} strokeWidth="3" />
+    <rect x="35" y="35" width="30" height="8" rx="2" fill={color} />
+    <path d="M42,35 Q50,20 58,35" fill="#fde68a" />
+    <line x1="40" y1="50" x2="60" y2="50" stroke={color} strokeWidth="1" />
+    <line x1="40" y1="60" x2="55" y2="60" stroke={color} strokeWidth="1" />
+    <line x1="40" y1="70" x2="60" y2="70" stroke={color} strokeWidth="1" />
+  </svg>
+);
+
+const RattleIllustration = ({ color = "#38bdf8" }) => (
+  <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-lg opacity-40">
+    <circle cx="50" cy="35" r="20" fill="none" stroke={color} strokeWidth="5" />
+    <circle cx="50" cy="35" r="8" fill={color} />
+    <rect x="47" y="55" width="6" height="30" rx="3" fill={color} />
+    <circle cx="50" cy="85" r="8" fill="none" stroke={color} strokeWidth="4" />
+  </svg>
+);
+
 const GroomIllustration = () => (
   <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
     <defs>
@@ -208,7 +237,6 @@ const App: React.FC = () => {
   const [zmanim, setZmanim] = useState<ZmanimData>({ sunrise: "--:--", sunset: "--:--", misheyakir: "--:--", candleLighting: "--:--", havdalah: "--:--", hebrewDate: "", parasha: "טוען..." });
   const [halakha, setHalakha] = useState<string>("טוען הלכה יומית...");
 
-  // תיקון: הצגת התאריך העברי באותיות
   const hebrewDateLocal = useMemo(() => {
     try {
       const formatter = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { 
@@ -278,7 +306,6 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [fetchZmanim, refreshHalakha]);
 
-  // --- תצוגת דפי הלופ ---
   const renderCelebrationPage = (type: CelebrationType) => {
     if (type === 'custom') {
       const data = celebrations.custom;
@@ -342,18 +369,33 @@ const App: React.FC = () => {
     const isDaughter = type === 'daughter_birth';
 
     const theme = {
-      wedding: { bg: "bg-[#fffbf2]", accent: "text-red-900", sub: "text-red-800", border: "border-red-200", marquee: "bg-red-900" },
-      son_birth: { bg: "bg-[#f0f9ff]", accent: "text-blue-900", sub: "text-blue-800", border: "border-blue-200", marquee: "bg-blue-900" },
-      daughter_birth: { bg: "bg-[#fff1f2]", accent: "text-pink-900", sub: "text-pink-800", border: "border-pink-200", marquee: "bg-pink-800" }
+      wedding: { bg: "bg-[#fffbf2]", accent: "text-red-900", sub: "text-red-800", border: "border-red-200", marquee: "bg-red-900", itemColor: "#991b1b" },
+      son_birth: { bg: "bg-[#f0f9ff]", accent: "text-blue-900", sub: "text-blue-800", border: "border-blue-200", marquee: "bg-blue-900", itemColor: "#1e3a8a" },
+      daughter_birth: { bg: "bg-[#fff1f2]", accent: "text-pink-900", sub: "text-pink-800", border: "border-pink-200", marquee: "bg-pink-800", itemColor: "#9d174d" }
     }[type as 'wedding'|'son_birth'|'daughter_birth'];
 
     return (
       <div className={`h-screen w-screen flex flex-col ${theme.bg} overflow-hidden relative animate-fade-in font-sans`}>
+        {/* רקע עם איורים מרחפים */}
+        {(isSon || isDaughter) && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-12 left-12 animate-bounce-slow opacity-30 scale-150 rotate-12"><PacifierIllustration color={theme.itemColor} /></div>
+            <div className="absolute top-1/4 right-20 animate-pulse opacity-30 scale-125 -rotate-12"><BottleIllustration color={theme.itemColor} /></div>
+            <div className="absolute bottom-24 left-24 animate-bounce opacity-30 scale-150 rotate-45"><RattleIllustration color={theme.itemColor} /></div>
+            <div className="absolute bottom-1/3 right-12 animate-pulse opacity-30 scale-110 -rotate-45"><PacifierIllustration color={theme.itemColor} /></div>
+            <div className="absolute top-1/3 left-1/4 animate-bounce-slow opacity-20 scale-100 rotate-90"><BottleIllustration color={theme.itemColor} /></div>
+            <div className="absolute bottom-12 right-1/3 animate-bounce opacity-25 scale-125 -rotate-90"><RattleIllustration color={theme.itemColor} /></div>
+          </div>
+        )}
+
         <div className="fixed top-4 left-4 z-50"><button onClick={() => { setTempCelebrations(celebrations); setIsEditingCelebration(true); }} className={`p-3 bg-white/50 backdrop-blur-md rounded-full shadow-lg border border-slate-200`}><Settings size={24} /></button></div>
         <div className="flex-1 flex flex-col items-center justify-center p-8 z-10 text-center">
           {isWedding && <div className="flex items-center gap-12 mb-12"><div className="w-64 h-64 rounded-full border-8 border-amber-400/30 bg-white shadow-2xl overflow-hidden"><GroomIllustration /></div><WeddingRingsIllustration /><div className="w-64 h-64 rounded-full border-8 border-amber-400/30 bg-white shadow-2xl overflow-hidden"><BrideIllustration /></div></div>}
-          {(isSon || isDaughter) && <div className="flex items-center gap-16 mb-12"><BabyIllustration gender={isSon ? 'boy' : 'girl'} /></div>}
-          <div className="space-y-10">
+          {(isSon || isDaughter) && <div className="flex items-center gap-16 mb-12 relative">
+              <div className="absolute -inset-12 bg-white/40 blur-3xl rounded-full"></div>
+              <BabyIllustration gender={isSon ? 'boy' : 'girl'} />
+            </div>}
+          <div className="space-y-10 relative">
             <h1 className={`text-9xl font-black font-serif-hebrew ${theme.accent} drop-shadow-lg`}>מזל טוב</h1>
             <div className={`bg-white/60 backdrop-blur-sm border-y-4 ${theme.border} py-12 px-24 transform rotate-1 rounded-[3rem] shadow-xl`}>
                <p className={`text-6xl font-bold font-serif-hebrew ${theme.sub}`}>למשפחת <span className={`font-black`}>{data.familyName}</span> היקרים</p>
@@ -374,14 +416,17 @@ const App: React.FC = () => {
       <>
         {renderCelebrationPage(currentPage)}
         {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v7', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
-        <style>{`@keyframes progress { from { width: 0%; } to { width: 100%; } }`}</style>
+        <style>{`
+          @keyframes progress { from { width: 0%; } to { width: 100%; } }
+          @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+          .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
+        `}</style>
       </>
     );
   }
 
   return (
     <div className="h-screen w-screen flex flex-col p-4 space-y-4 bg-slate-950 overflow-hidden text-slate-100 font-sans">
-      {/* Settings buttons (Left side) */}
       <div className="fixed top-4 left-4 z-50 flex flex-col gap-2">
         <button onClick={toggleFullscreen} className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all shadow-lg" title="מסך מלא"><Maximize size={20} /></button>
         <button onClick={() => { setTempCelebrations(celebrations); setIsEditingCelebration(true); }} className="p-2 bg-red-500/20 rounded-xl text-red-400 border border-red-500/30 hover:bg-red-500/40 transition-all shadow-lg" title="עדכון מזל טוב והקדשה"><Heart size={20} /></button>
