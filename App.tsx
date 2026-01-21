@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Clock, Sun, Moon, BookOpen, Star, Sparkles, Calendar, Maximize, Minimize, Edit3, Plus, Trash2, Settings, PartyPopper, Heart, Eye, X, Check, Baby, Flower2, Volume2, ShieldCheck, User, Users, Image as ImageIcon, Upload, FileText } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ZmanimData, Lesson, SynagogueTimes, CelebrationSettings, CelebrationType, EventConfig, DedicationConfig, CustomContentConfig } from './types';
 import { fetchDailyHalakha } from './services/geminiService';
 
@@ -413,17 +413,17 @@ const App: React.FC = () => {
 
       <main className="flex-1 flex gap-4 min-h-0">
         <div className="flex-[2.5] grid grid-cols-3 gap-3">
-          <ZmanimItem icon={<Sun size={40} className="text-amber-300" />} label="טלית ותפילין" value={zmanim.misheyakir} sub="משיכיר" />
-          <ZmanimItem icon={<Sun size={40} className="text-orange-400" />} label="זריחה" value={zmanim.sunrise} sub="הנץ החמה" />
-          <ZmanimItem icon={<Moon size={40} className="text-blue-400" />} label="שקיעה" value={zmanim.sunset} sub="שקיעת החמה" />
-          <ZmanimItem icon={<Star size={40} className="text-amber-400" />} label="כניסת שבת" value={zmanim.candleLighting} sub="הדלקת נרות" primary />
-          <ZmanimItem icon={<Sun size={40} className="text-indigo-300" />} label="מנחה" value={calculatedMinchaDaily} sub="שקיעה - 20 ד'" primary />
-          <ZmanimItem icon={<Moon size={40} className="text-indigo-400" />} label="יציאת שבת" value={zmanim.havdalah} sub="מוצאי שבת" primary />
-          <ZmanimItem icon={<Sun size={40} className="text-orange-500" />} label="מנחה גדולה" value={synagogueTimes.minchaGedolaShabbat} sub="שבת" isManual />
-          <ZmanimItem icon={<Sun size={40} className="text-amber-500" />} label="מנחה קטנה" value={synagogueTimes.minchaKetanaShabbat} sub="שבת" isManual />
-          <div className="bg-slate-900/40 rounded-[2rem] border border-white/5 flex flex-col items-center justify-center p-4">
-             <Sun size={32} className="text-amber-500 mb-2" />
-             <span className="text-lg font-black text-slate-300">זמני בית הכנסת</span>
+          <ZmanimItem icon={<Sun size={32} className="text-amber-300" />} label="טלית ותפילין" value={zmanim.misheyakir} sub="משיכיר" />
+          <ZmanimItem icon={<Sun size={32} className="text-orange-400" />} label="זריחה" value={zmanim.sunrise} sub="הנץ החמה" />
+          <ZmanimItem icon={<Moon size={32} className="text-blue-400" />} label="שקיעה" value={zmanim.sunset} sub="שקיעת החמה" />
+          <ZmanimItem icon={<Star size={32} className="text-amber-400" />} label="כניסת שבת" value={zmanim.candleLighting} sub="הדלקת נרות" primary />
+          <ZmanimItem icon={<Sun size={32} className="text-indigo-300" />} label="מנחה" value={calculatedMinchaDaily} sub="שקיעה - 20 ד'" primary />
+          <ZmanimItem icon={<Moon size={32} className="text-indigo-400" />} label="יציאת שבת" value={zmanim.havdalah} sub="מוצאי שבת" primary />
+          <ZmanimItem icon={<Sun size={32} className="text-orange-500" />} label="מנחה גדולה" value={synagogueTimes.minchaGedolaShabbat} sub="שבת" isManual />
+          <ZmanimItem icon={<Sun size={32} className="text-amber-500" />} label="מנחה קטנה" value={synagogueTimes.minchaKetanaShabbat} sub="שבת" isManual />
+          <div className="bg-slate-900/40 rounded-[2rem] border border-white/5 flex flex-col items-center justify-center p-3">
+             <Sun size={24} className="text-amber-500 mb-1" />
+             <span className="text-md font-black text-slate-300">זמני בית הכנסת</span>
           </div>
         </div>
         <div className="flex-[1.2] bg-slate-900/80 rounded-[2.5rem] border border-white/10 p-6 flex flex-col shadow-2xl overflow-hidden">
@@ -444,11 +444,11 @@ const App: React.FC = () => {
 };
 
 const ZmanimItem = ({ icon, label, value, sub, primary, isManual }: any) => (
-  <div className={`flex flex-col items-center justify-center p-3 rounded-[2rem] border transition-all ${primary ? 'bg-amber-500/10 border-amber-500/40' : isManual ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-slate-900/50 border-white/5'}`}>
-    <div className={`mb-2 p-2 rounded-2xl ${primary ? 'bg-amber-500/20' : 'bg-slate-950'}`}>{icon}</div>
-    <span className={`text-[11px] font-black uppercase tracking-tighter mb-1 ${primary ? 'text-amber-400' : 'text-slate-400'}`}>{label}</span>
-    <span className="text-4xl font-black text-white drop-shadow-md">{value || "--:--"}</span>
-    <span className={`text-[10px] font-black px-4 py-1 rounded-full mt-2 ${primary ? 'bg-amber-500 text-slate-950' : 'bg-white/5 text-slate-500'}`}>{sub}</span>
+  <div className={`flex flex-col items-center justify-center p-3 rounded-[2.5rem] border transition-all ${primary ? 'bg-amber-500/10 border-amber-500/40' : isManual ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-slate-900/50 border-white/5 shadow-inner'}`}>
+    <div className={`mb-2 p-2 rounded-[1.2rem] ${primary ? 'bg-amber-500/20' : 'bg-slate-950'}`}>{icon}</div>
+    <span className={`text-2xl font-black mb-1 text-center tracking-tight leading-none ${primary ? 'text-amber-400' : 'text-slate-300'}`}>{label}</span>
+    <span className="text-4xl font-black text-white drop-shadow-md mb-1">{value || "--:--"}</span>
+    <span className={`text-[10px] font-black px-4 py-1 rounded-full shadow-lg ${primary ? 'bg-amber-500 text-slate-950' : 'bg-white/10 text-slate-400'}`}>{sub}</span>
   </div>
 );
 
