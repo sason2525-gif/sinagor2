@@ -1,10 +1,10 @@
 
-import { Clock, Sun, Moon, BookOpen, Star, Sparkles, Calendar, Maximize, Minimize, Edit3, Plus, Trash2, Settings, PartyPopper, Heart, Eye, X, Check, Baby, Flower2, Volume2, ShieldCheck, User, Users, Image as ImageIcon, Upload, FileText, Phone, MapPin } from 'lucide-react';
+import { Clock, Sun, Moon, BookOpen, Star, Sparkles, Calendar, Maximize, Edit3, Plus, Trash2, Settings, Heart, Baby, Flower2, Image as ImageIcon, Upload, Phone, MapPin } from 'lucide-react';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ZmanimData, Lesson, SynagogueTimes, CelebrationSettings, CelebrationType, EventConfig, DedicationConfig, CustomContentConfig, HallAdConfig } from './types';
+import { ZmanimData, Lesson, SynagogueTimes, CelebrationSettings, CelebrationType } from './types';
 import { fetchDailyHalakha } from './services/geminiService';
 
-// --- איורים משודרגים ---
+// --- איורים ---
 
 const GoldBalloon = ({ className = "" }) => (
   <svg viewBox="0 0 100 120" className={className}>
@@ -33,7 +33,8 @@ const TreeIllustration = ({ colorScale = 1 }) => (
         <stop offset="100%" style={{ stopColor: '#2e7d32', stopOpacity: 1 }} />
       </radialGradient>
     </defs>
-    <g transform={`scale(${colorScale})`} transform-origin="center">
+    {/* Fix: transformOrigin is a CSS property and should be passed via the style prop in React SVG elements to resolve TypeScript errors */}
+    <g transform={`scale(${colorScale})`} style={{ transformOrigin: "center" }}>
       <path d="M90,240 Q100,180 100,140 M100,150 Q120,120 140,110 M100,160 Q70,120 50,115 M100,180 Q130,160 150,165" stroke="url(#trunkGrad)" strokeWidth="8" fill="none" strokeLinecap="round" />
       <path d="M100,240 L100,120" stroke="url(#trunkGrad)" strokeWidth="10" fill="none" />
       <circle cx="100" cy="70" r="45" fill="url(#leafGrad)" opacity="0.9" />
@@ -44,31 +45,15 @@ const TreeIllustration = ({ colorScale = 1 }) => (
   </svg>
 );
 
-const PacifierIllustration = ({ color = "#38bdf8" }) => (
-  <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-lg opacity-40">
-    <circle cx="50" cy="40" r="15" fill={color} opacity="0.3" />
-    <path d="M30,60 Q50,90 70,60" fill="none" stroke={color} strokeWidth="6" strokeLinecap="round" />
-    <rect x="35" y="45" width="30" height="15" rx="5" fill={color} />
-  </svg>
-);
-
-const BottleIllustration = ({ color = "#38bdf8" }) => (
-  <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-lg opacity-40">
-    <rect x="35" y="40" width="30" height="45" rx="5" fill="white" stroke={color} strokeWidth="3" />
-    <rect x="35" y="35" width="30" height="8" rx="2" fill={color} />
-  </svg>
-);
-
-const RattleIllustration = ({ color = "#38bdf8" }) => (
-  <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-lg opacity-40">
-    <circle cx="50" cy="35" r="20" fill="none" stroke={color} strokeWidth="5" />
-    <rect x="47" y="55" width="6" height="30" rx="3" fill={color} />
+const CornerDecoration = () => (
+  <svg viewBox="0 0 100 100" className="w-32 h-32 text-amber-500/30">
+    <path d="M0,0 L100,0 M0,0 L0,100 M10,10 L90,10 M10,10 L10,90" fill="none" stroke="currentColor" strokeWidth="2" />
+    <circle cx="10" cy="10" r="5" fill="currentColor" />
   </svg>
 );
 
 const BabyIllustration = ({ gender = 'boy' }) => {
-  const isGirl = gender === 'girl';
-  const accentColor = isGirl ? "#f472b6" : "#38bdf8";
+  const accentColor = gender === 'girl' ? "#f472b6" : "#38bdf8";
   return (
     <div className="relative animate-bounce-slow">
       <svg viewBox="0 0 200 200" className="w-64 h-64 drop-shadow-2xl">
@@ -94,7 +79,7 @@ const App: React.FC = () => {
       hall_ad: { isActive: true, displayDuration: 15, contactPhone: "053-5301057", contactName: "ששון", images: ["", "", ""] }
     };
     
-    const saved = localStorage.getItem('synagogue_celebration_v9');
+    const saved = localStorage.getItem('synagogue_celebration_v10');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -203,40 +188,27 @@ const App: React.FC = () => {
             <div className="absolute top-10 right-10 flex gap-2">
                 <GoldBalloon className="w-16 animate-bounce" />
                 <GoldBalloon className="w-20 -mt-4 animate-pulse" />
-                <GoldBalloon className="w-14 mt-2" />
             </div>
-            <div className="absolute bottom-10 left-10 flex gap-2 rotate-180">
-                <GoldBalloon className="w-16 animate-bounce" />
-                <GoldBalloon className="w-20 -mt-4" />
-            </div>
-            
             <div className="z-10 text-center space-y-6 max-w-6xl">
-                <h1 className="text-[8rem] font-black font-serif-hebrew leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-[#fef3c7] via-[#fbbf24] to-[#b45309] drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">אולם משכנות נריה</h1>
-                <p className="text-5xl font-black text-amber-200 drop-shadow-md italic">יש לכם אירוע קטן ואינטימי?</p>
-                <p className="text-4xl font-bold text-slate-100 bg-white/10 py-3 px-12 rounded-full inline-block backdrop-blur-md border border-white/20">שבת חתן, בר מצווה, ברית מילה, חלאקה וכו'</p>
-
+                <h1 className="text-[8rem] font-black font-serif-hebrew text-transparent bg-clip-text bg-gradient-to-b from-[#fef3c7] via-[#fbbf24] to-[#b45309] drop-shadow-xl">אולם משכנות נריה</h1>
+                <p className="text-5xl font-black text-amber-200 italic">יש לכם אירוע קטן ואינטימי?</p>
                 <div className="grid grid-cols-3 gap-8 mt-12 px-8">
                     {[0, 1, 2].map(idx => (
-                      <div key={idx} className={`bg-white p-3 pb-10 shadow-2xl transform transition-transform ${idx === 0 ? 'rotate-[-3deg]' : idx === 1 ? 'rotate-[2deg] -mt-6' : 'rotate-[-1deg]'}`}>
-                          <div className="aspect-video bg-slate-200 overflow-hidden border border-slate-300">
-                               <img src={data.images[idx] || defaultPhotos[idx]} className="w-full h-full object-cover" alt="תמונת אולם" />
+                      <div key={idx} className={`bg-white p-3 pb-10 shadow-2xl transform ${idx === 1 ? '-mt-6 rotate-2' : 'rotate-[-2deg]'}`}>
+                          <div className="aspect-video bg-slate-200 overflow-hidden">
+                               <img src={data.images[idx] || defaultPhotos[idx]} className="w-full h-full object-cover" alt="אולם" />
                           </div>
                       </div>
                     ))}
                 </div>
-
                 <div className="pt-8 space-y-6">
-                    <div className="flex items-center justify-center gap-4 text-slate-300 text-3xl font-bold">
-                        <MapPin className="text-amber-500" size={32} /> רחוב פנחס בן יאיר 24 אלעד
-                    </div>
                     <div className="flex items-center justify-center gap-8 bg-slate-100/10 p-6 rounded-3xl border border-white/10">
-                        <div className="flex items-center gap-3"><Phone className="text-amber-400" size={40} /><p className="text-6xl font-black text-white tracking-widest">{data.contactPhone}</p></div>
+                        <Phone className="text-amber-400" size={40} /><p className="text-6xl font-black text-white">{data.contactPhone}</p>
                         <div className="h-12 w-px bg-white/20"></div>
                         <p className="text-6xl font-black text-amber-400">{data.contactName}</p>
                     </div>
                 </div>
             </div>
-            
             <div className="absolute bottom-6 left-1/4 right-1/4 h-2 bg-white/10 rounded-full overflow-hidden">
                 <div className="h-full bg-amber-500" style={{ animation: `progress ${data.displayDuration}s linear forwards` }} />
             </div>
@@ -247,10 +219,8 @@ const App: React.FC = () => {
     if (type === 'custom') {
       const data = celebrations.custom;
       return (
-        <div className="h-screen w-screen bg-slate-950 flex flex-col items-center justify-center relative animate-fade-in overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center p-4">
-            <img src={data.imageData} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border-4 border-white/10" alt="תוכן מותאם" />
-          </div>
+        <div className="h-screen w-screen bg-slate-950 flex flex-col items-center justify-center relative animate-fade-in">
+          <img src={data.imageData} className="max-w-full max-h-full object-contain" alt="Custom" />
           <div className="absolute bottom-6 left-1/4 right-1/4 h-2 bg-white/10 rounded-full overflow-hidden">
               <div className="h-full bg-amber-500" style={{ animation: `progress ${data.displayDuration}s linear forwards` }} />
           </div>
@@ -258,29 +228,50 @@ const App: React.FC = () => {
       );
     }
 
-    const data = celebrations[type as keyof Omit<CelebrationSettings, 'dedication' | 'custom' | 'hall_ad'>];
+    if (type === 'dedication') {
+        const data = celebrations.dedication;
+        return (
+          <div className="h-screen w-screen flex flex-col bg-[#fdfbf7] relative animate-fade-in font-sans p-12">
+            <div className="absolute inset-8 border-4 border-amber-600/30 rounded-3xl pointer-events-none"></div>
+            <div className="absolute top-4 left-4"><CornerDecoration /></div>
+            <div className="absolute bottom-4 right-4 rotate-180"><CornerDecoration /></div>
+            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-12">
+                <h1 className="text-7xl font-black text-amber-900 font-serif-hebrew">"עץ חיים היא למחזיקים בה"</h1>
+                <div className="space-y-4">
+                    <h2 className="text-5xl font-bold">הלימוד השבוע להצלחת</h2>
+                    <p className="text-[10rem] font-black text-blue-900 leading-none">{data.successName}</p>
+                </div>
+                <div className="text-6xl font-bold text-amber-900">ומשפחתו</div>
+                <div className="text-5xl text-blue-800">{data.familySubText}</div>
+            </div>
+            <div className="absolute bottom-6 left-1/4 right-1/4 h-2 bg-amber-200 rounded-full overflow-hidden">
+                <div className="h-full bg-amber-600" style={{ animation: `progress ${data.displayDuration}s linear forwards` }} />
+            </div>
+          </div>
+        );
+    }
+
+    // Wedding, Son Birth, Daughter Birth
+    const data = celebrations[type as 'wedding' | 'son_birth' | 'daughter_birth'];
     const isSon = type === 'son_birth';
+    const isWedding = type === 'wedding';
     const theme = {
-      wedding: { bg: "bg-[#fffbf2]", accent: "text-red-900", sub: "text-red-800", border: "border-red-200", itemColor: "#991b1b" },
-      son_birth: { bg: "bg-[#f0f9ff]", accent: "text-blue-900", sub: "text-blue-800", border: "border-blue-200", itemColor: "#1e3a8a" },
-      daughter_birth: { bg: "bg-[#fff1f2]", accent: "text-pink-900", sub: "text-pink-800", border: "border-pink-200", itemColor: "#9d174d" }
-    }[type as 'wedding'|'son_birth'|'daughter_birth'];
+      wedding: { bg: "bg-[#fffbf2]", accent: "text-red-900", sub: "text-red-800", border: "border-red-200" },
+      son_birth: { bg: "bg-[#f0f9ff]", accent: "text-blue-900", sub: "text-blue-800", border: "border-blue-200" },
+      daughter_birth: { bg: "bg-[#fff1f2]", accent: "text-pink-900", sub: "text-pink-800", border: "border-pink-200" }
+    }[type as 'wedding' | 'son_birth' | 'daughter_birth'];
 
     return (
       <div className={`h-screen w-screen flex flex-col ${theme.bg} overflow-hidden relative animate-fade-in font-sans`}>
-        {(isSon || type === 'daughter_birth') && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-            <div className="absolute top-12 left-12 animate-bounce-slow"><PacifierIllustration color={theme.itemColor} /></div>
-            <div className="absolute bottom-24 right-20 animate-pulse"><BottleIllustration color={theme.itemColor} /></div>
-          </div>
-        )}
         <div className="flex-1 flex flex-col items-center justify-center p-8 z-10 text-center">
-          <BabyIllustration gender={isSon ? 'boy' : 'girl'} />
+          {isWedding ? <GoldBalloon className="w-48" /> : <BabyIllustration gender={isSon ? 'boy' : 'girl'} />}
           <div className="space-y-8 mt-12">
-            <h1 className={`text-9xl font-black font-serif-hebrew ${theme.accent} drop-shadow-lg`}>מזל טוב</h1>
+            <h1 className={`text-9xl font-black font-serif-hebrew ${theme.accent}`}>מזל טוב</h1>
             <div className={`bg-white/60 backdrop-blur-sm border-y-4 ${theme.border} py-12 px-24 rounded-[3rem] shadow-xl`}>
                <p className={`text-6xl font-bold font-serif-hebrew ${theme.sub}`}>למשפחת <span className="font-black">{data.familyName}</span> היקרים</p>
-               <p className={`text-5xl font-bold font-serif-hebrew mt-8 ${isSon ? 'text-blue-700' : 'text-pink-700'}`}>להולדת הב{isSon ? 'ן' : 'ת'} היקר{isSon ? '' : 'ה'}</p>
+               <p className="text-5xl font-bold mt-8">
+                 {isWedding ? `לרגל נישואי ${data.coupleNames}` : `להולדת הב${isSon ? 'ן' : 'ת'} היקר${isSon ? '' : 'ה'}`}
+               </p>
             </div>
           </div>
         </div>
@@ -294,7 +285,7 @@ const App: React.FC = () => {
   if (currentPage !== 'main') {
     return (
       <>
-        {renderCelebrationPage(currentPage)}
+        {renderCelebrationPage(currentPage as CelebrationType)}
         <style>{`
           @keyframes progress { from { width: 0%; } to { width: 100%; } }
           @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -317,7 +308,6 @@ const App: React.FC = () => {
       <header className="grid grid-cols-1 md:grid-cols-3 items-center bg-slate-900/60 backdrop-blur-2xl rounded-[2.5rem] p-6 border border-white/10 shadow-2xl">
         <div className="text-center md:text-right">
           <h1 className="text-8xl font-black text-amber-400 font-serif-hebrew drop-shadow-lg">{currentTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}</h1>
-          <div className="flex items-center gap-2 text-slate-400 mt-2 font-bold"><Clock size={18} /> <span>זמן מקומי</span></div>
         </div>
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-4 text-white"><Calendar size={48} className="text-amber-400" /><h2 className="text-6xl font-black font-serif-hebrew">לוח מועדים</h2></div>
@@ -346,7 +336,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-hidden"><div className="animate-marquee text-3xl font-black text-slate-950 py-2">{marqueeText.split('•').map((m, i) => <span key={i} className="mx-12 flex items-center gap-4 inline-flex"><Star size={24} /> {m.trim()}</span>)}</div></div>
       </footer>
 
-      {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v9', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
+      {isEditingCelebration && (<CelebrationEditModal temp={tempCelebrations} setTemp={setTempCelebrations} onCancel={() => setIsEditingCelebration(false)} onSave={() => { setCelebrations(tempCelebrations); localStorage.setItem('synagogue_celebration_v10', JSON.stringify(tempCelebrations)); setIsEditingCelebration(false); setActivePageIndex(0); }} />)}
     </div>
   );
 };
@@ -413,7 +403,18 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
           )}
 
           <div className="space-y-2"><label className="font-bold">זמן תצוגה (שניות):</label><input type="number" value={currentConfig.displayDuration} onChange={(e) => update('displayDuration', parseInt(e.target.value))} className="w-full bg-white p-4 rounded-xl border-2 font-black" /></div>
-          {activeTab !== 'custom' && activeTab !== 'hall_ad' && <div className="space-y-2"><label className="font-bold">שם משפחה:</label><input type="text" value={currentConfig.familyName || ""} onChange={(e) => update('familyName', e.target.value)} className="w-full bg-white p-4 rounded-xl border-2 font-black" /></div>}
+          {activeTab === 'dedication' && (
+            <>
+              <div className="space-y-2"><label className="font-bold">שם להקדשה:</label><input type="text" value={temp.dedication.successName} onChange={(e) => update('successName', e.target.value)} className="w-full bg-white p-4 rounded-xl border-2 font-black" /></div>
+              <div className="space-y-2"><label className="font-bold">טקסט נוסף:</label><input type="text" value={temp.dedication.familySubText} onChange={(e) => update('familySubText', e.target.value)} className="w-full bg-white p-4 rounded-xl border-2 font-black" /></div>
+            </>
+          )}
+          {(activeTab === 'wedding' || activeTab === 'son_birth' || activeTab === 'daughter_birth') && (
+            <>
+                <div className="space-y-2"><label className="font-bold">שם משפחה:</label><input type="text" value={currentConfig.familyName || ""} onChange={(e) => update('familyName', e.target.value)} className="w-full bg-white p-4 rounded-xl border-2 font-black" /></div>
+                {activeTab === 'wedding' && <div className="space-y-2"><label className="font-bold">שמות הזוג:</label><input type="text" value={currentConfig.coupleNames || ""} onChange={(e) => update('coupleNames', e.target.value)} className="w-full bg-white p-4 rounded-xl border-2 font-black" /></div>}
+            </>
+          )}
         </div>
 
         <div className="flex justify-center gap-4 mt-12">
@@ -424,11 +425,5 @@ const CelebrationEditModal = ({ temp, setTemp, onCancel, onSave }: any) => {
     </div>
   );
 };
-
-const TabButton = ({ active, onClick, icon, label, activeClass }: any) => (
-  <button onClick={onClick} className={`p-3 rounded-3xl border-4 flex flex-col items-center gap-1 transition-all ${active ? activeClass + ' shadow-lg scale-105' : 'bg-white opacity-60'}`}>
-    {icon} <span className="text-[10px] font-black">{label}</span>
-  </button>
-);
 
 export default App;
