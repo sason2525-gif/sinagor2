@@ -44,24 +44,15 @@ export interface CustomContentConfig {
   title: string;
 }
 
-export interface HallAdConfig {
-  isActive: boolean;
-  displayDuration: number;
-  contactPhone: string;
-  contactName: string;
-  images: string[]; // מערך של 3 תמונות בפורמט Base64
-}
-
 export interface CelebrationSettings {
   wedding: EventConfig;
   son_birth: EventConfig;
   daughter_birth: EventConfig;
   dedication: DedicationConfig;
   custom: CustomContentConfig;
-  hall_ad: HallAdConfig;
 }
 
-export type CelebrationType = 'wedding' | 'son_birth' | 'daughter_birth' | 'dedication' | 'custom' | 'hall_ad';
+export type CelebrationType = 'wedding' | 'son_birth' | 'daughter_birth' | 'dedication' | 'custom';
 
 export interface CelebrationData extends EventConfig {
   type: CelebrationType;
